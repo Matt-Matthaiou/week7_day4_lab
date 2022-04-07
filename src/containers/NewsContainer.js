@@ -7,15 +7,16 @@ const NewsContainer = ()=>
     const [news, setNews] = useState([]);
     const [filtered, setFiltered] = useState([])
     
-    
-
     useEffect(()=>
     {
         getUrl()
         
-        
-    
     },[])
+
+    useEffect(()=>
+    {
+        setFiltered(news)
+    },[news])
 
     const getUrl = function()
     {
@@ -33,7 +34,7 @@ const NewsContainer = ()=>
         Promise.all(ids.map(id => fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`)))
         .then(responses => Promise.all(responses.map(response=>response.json())))
         .then(results => setNews(results))
-        .then(setFiltered(news))
+        
         
     }
 
@@ -53,10 +54,24 @@ const NewsContainer = ()=>
 
     }
 
+    const searchByAuthor = (author)=>
+    {
+        if (author === false)
+        {
+            setFiltered(news)
+        }
+        else
+        {
+            const authorFiltered = news.filter(item => {
+                return item.by.includes(author)})
+            setFiltered(authorFiltered)
+        }
+    }
+
     return(
         <>
             <h1>Hacker News</h1>
-            <NewsForm onFormChange={onFormChange}/>
+            <NewsForm onFormChange={onFormChange} searchByAuthor={searchByAuthor}/>
             <NewsList news={filtered}/>
         </>
     )
